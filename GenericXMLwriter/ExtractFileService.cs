@@ -383,6 +383,8 @@ namespace GenericXmlCreator
         {
             if (colsToDiffer.Keys.Contains(columnName))
             {
+                if (string.IsNullOrEmpty(row[columnName].ToString()))
+                { return; }
                 string curVal = "";
                 for (int i = 0; i < colsToDiffer.Keys.Count; i++)
                 {
