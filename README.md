@@ -14,5 +14,5 @@ MemberId,PolicyId,BenefitId (meaning a member would have multiple policies each 
 
 How to Use:
 1. Call ExtractFileService's class WriteRecord method.
-
+2. To remove empty nodes from returned xmls, for each xml call method removeEmptyNodes(xml)
 
