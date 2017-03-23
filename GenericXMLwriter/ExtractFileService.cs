@@ -511,6 +511,47 @@ namespace GenericXmlCreator
             }
         }
 
+        public string removeEmptyNodes(string incomingXml)
+        {
+            XDocument doc = XDocument.Parse(incomingXml);
+            isDeleted = false;
+            rn(doc.Root);
+
+            return doc.ToString();
+        }
+
+        static bool isDeleted = false;
+
+        private void rn(XElement node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+            if (node.Elements().Count() > 0)
+            {
+                for (int i = 0; i < node.Elements().Count(); i++)
+                {
+                    XElement ele = node.Elements().ElementAt(i);
+                    rn(ele);
+                    if (isDeleted)
+                        i--;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(node.Value) && node.Attributes().All(t => string.IsNullOrEmpty(t.Value) == true))
+                {
+                    node.Remove();
+                    isDeleted = true;
+                }
+                else
+                {
+                    isDeleted = false;
+                }
+            }
+        }
+
         public void Dispose()
         {
             if (finalOutputDataSet != null)
