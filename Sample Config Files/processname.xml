@@ -1,9 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <OutputFile>
   <Layout>
-    <NewXMLForEachNewValue>a</NewXMLForEachNewValue>
-    <DbColumnsThatShouldCombineUnique>a,b</DbColumnsThatShouldCombineUnique>
-    <!--<DbColumnsThatShouldCombineUnique>Member_PK,POLICY_PK,BENEFIT_PK</DbColumnsThatShouldCombineUnique>-->
-    <!--<DbColumnsThatShouldCombineUnique>NoticeId,PolicyId,BenefitId</DbColumnsThatShouldCombineUnique>-->
+    <NewXMLForEachNewValue></NewXMLForEachNewValue>
+    <DbColumnsThatShouldCombineUnique>ItemId,BatterId#ItemId,ToppingId</DbColumnsThatShouldCombineUnique>
+    <DbColumnForSorting>ItemId,BatterId,ToppingId</DbColumnForSorting>
   </Layout>
 </OutputFile>
