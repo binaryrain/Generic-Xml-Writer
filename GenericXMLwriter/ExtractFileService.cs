@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -11,7 +11,7 @@ using GenericXmlCreator.Interfaces;
 
 namespace GenericXmlCreator
 {
-    public class ExtractFileService : IDisposable, IExtractFileService
+    public class ExtractFileService :  IExtractFileService
     {
         #region Class variables
 
@@ -23,17 +23,14 @@ namespace GenericXmlCreator
         /// <summary>
         /// Mapping Configuration File info
         /// </summary>
-        public FileInfo mappingConfigurationInfoFile { get; set; }
+        private FileInfo mappingConfigurationInfoFile { get; set; }
 
         /// <summary>
         /// OutputFormat Sample File info
         /// </summary>
-        public FileInfo outputFormatInfoFile { get; set; }
-
+        private FileInfo outputFormatInfoFile { get; set; }
 
         private DataSet finalOutputDataSet = new DataSet();
-
-        private DataSet InputDataSet = new DataSet();
 
         private bool nodeFound = false;
         private XElement curNode = null;
@@ -43,9 +40,11 @@ namespace GenericXmlCreator
         private Dictionary<string, bool> colsToDiffer = null;
         private Dictionary<string, string> colsToDifferVals = null;
         private bool found = false;
-        string strColsToBeUnique = "";
-
-
+        private string strColsToBeUnique = "";
+        static bool isDeleted = false;
+        private string sortColumns;
+        List<List<string>> columnsThatDoLayering = new List<List<string>>();
+        
         #endregion
 
         /// <summary>
@@ -90,15 +89,18 @@ namespace GenericXmlCreator
                 XDocument configDoc = XDocument.Load(mappingConfigurationInfoFile.FullName);
 
                 strColsToBeUnique = configDoc.Root.Element("Layout").Element("DbColumnsThatShouldCombineUnique").Value;
-                //finalXmlFolderLocation = configDoc.Root.Element("Layout").Element("FinalXmlFolderLocation").Value;
-                //if (!Directory.Exists(finalXmlFolderLocation))
-                //{
-                //    Directory.CreateDirectory(finalXmlFolderLocation);
-                //}
-                colsToBeUnique = strColsToBeUnique.Split(',').ToList<string>();
+                sortColumns = configDoc.Root.Element("Layout").Element("DbColumnForSorting").Value;
+               
+                colsToBeUnique = strColsToBeUnique.Replace('#', ',').Split(',').Distinct().ToList<string>();
                 colsToDiffer = new Dictionary<string, bool>();
                 colsToDifferVals = new Dictionary<string, string>();
-                foreach (string str in strColsToBeUnique.Split(','))
+                string[] listColsToLayer = strColsToBeUnique.Split('#');
+                foreach (string item in listColsToLayer)
+                {
+                    columnsThatDoLayering.Add(item.Split(',').ToList());
+                }
+
+                foreach (string str in strColsToBeUnique.Replace('#', ',').Split(',').Distinct())
                 {
                     colsToDiffer.Add(str, false);
                     colsToDifferVals.Add(str, "");
@@ -176,14 +178,14 @@ namespace GenericXmlCreator
                     return returnXml;
                 }
 
-                dv.Sort = strColsToBeUnique;
+                dv.Sort = sortColumns;
                 DataTable inputData = dv.ToTable();
                 curValues = new Dictionary<string, int>();
 
                 FillCurValues();
                 foreach (DataRow row in inputData.Rows)
                 {
-                    foreach (string str in strColsToBeUnique.Split(','))
+                    foreach (string str in strColsToBeUnique.Replace('#', ',').Split(',').Distinct())
                     {
                         colsToDiffer[str] = false;
                     }
@@ -215,18 +217,10 @@ namespace GenericXmlCreator
                         }
                     }
                 }
-
-
-
-                // if (_FileGenerationReqd)
-                //finalOutputDataSet.WriteXml(this.workingFolder + "\\" + cnt + ".xml");
-                //else
-                //{
+                
                 StringWriter sw = new StringWriter();
                 finalOutputDataSet.WriteXml(sw);
                 returnXml = sw.ToString();
-                //}
-
             }
             catch (Exception ex)
             {
@@ -381,32 +375,36 @@ namespace GenericXmlCreator
         /// <param name="row"></param>
         private void MarkColumnThatRequireNewLine(string columnName, DataRow row)
         {
-            if (colsToDiffer.Keys.Contains(columnName))
+            foreach (List<string> columnsThatLayer in columnsThatDoLayering)
             {
-                if (string.IsNullOrEmpty(row[columnName].ToString()))
-                { return; }
-                string curVal = "";
-                for (int i = 0; i < colsToDiffer.Keys.Count; i++)
+                if (columnsThatLayer.Contains(columnName))
                 {
-                    bool f = false;
-                    if (colsToDiffer.Keys.ElementAt(i) == columnName)
+                    if (string.IsNullOrWhiteSpace(row[columnName].ToString()))
+                    { return; }
+                    string curVal = "";
+                    for (int i = 0; i < columnsThatLayer.Count; i++)
                     {
-                        f = true;
-                        curVal = "";
-                        for (int j = 0; j <= i; j++)
+                        bool f = false;
+                        if (columnsThatLayer.ElementAt(i) == columnName)
                         {
-                            string colName = colsToDiffer.Keys.ElementAt(j);
-                            curVal = curVal + row[colName].ToString();
+                            f = true;
+                            curVal = "";
+                            for (int j = 0; j <= i; j++)
+                            {
+                                string colName = columnsThatLayer.ElementAt(j);
+                                curVal = curVal + row[colName].ToString();
+                            }
                         }
+                        if (f)
+                            break;
                     }
-                    if (f)
-                        break;
-                }
 
-                if (curVal != colsToDifferVals[columnName])
-                {
-                    colsToDiffer[columnName] = true;
-                    colsToDifferVals[columnName] = curVal;// row[dbcol.ColumnName].ToString();
+                    if (curVal != colsToDifferVals[columnName])
+                    {
+                        colsToDiffer[columnName] = true;
+                        colsToDifferVals[columnName] = curVal;// row[dbcol.ColumnName].ToString();
+                    }
+                    break;
                 }
             }
         }
@@ -423,6 +421,10 @@ namespace GenericXmlCreator
             {
                 if (col.Caption == colName)
                 {
+                    if (string.IsNullOrWhiteSpace(row[col.Caption].ToString()))
+                    {
+                        break;
+                    }
                     found = true;
                     if (dt.Rows.Count == 1 && dt.Rows[dt.Rows.Count - 1][col.ColumnName].ToString() == col.Caption.ToString())
                     {
@@ -520,8 +522,6 @@ namespace GenericXmlCreator
             return doc.ToString();
         }
 
-        static bool isDeleted = false;
-
         private void rn(XElement node)
         {
             if (node == null)
@@ -554,13 +554,18 @@ namespace GenericXmlCreator
 
         public void Dispose()
         {
-            if (finalOutputDataSet != null)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                finalOutputDataSet.Dispose();
-            }
-            if (InputDataSet != null)
-            {
-                InputDataSet.Dispose();
+                if (finalOutputDataSet != null)
+                {
+                    finalOutputDataSet.Dispose();
+                }
             }
         }
     }
