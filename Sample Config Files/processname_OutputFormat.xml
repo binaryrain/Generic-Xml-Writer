@@ -1,93 +1,14 @@
-<?xml version="1.0"?>
-<Envelope>
-  <Header>
-    <a>a</a>
-    <b>b</b>
-  </Header>
-  <Body>
-    <c>c</c>
-    <d>d</d>
-  </Body>
-</Envelope>
-<!--<Root>
-  <Clients>
-    <Client country="clientCountry">
-     
-        <zipcode>zipcode</zipcode>
-        <Name>clientname</Name>
-        <Num>clientnum</Num>
-        <Members atts="atts">
-          <Member>
-            <Name>MemberName</Name>
-            <SurName surnameatt="snameatt">MemSurname</SurName>
-            <Policies>
-              <Policy>
-                <PolicyNum>PolicyNum</PolicyNum>
-                <PolicyName>PolicyName</PolicyName>
-                <Benefits>
-                  <Benefit>
-                    <BenefitId>BenefitId</BenefitId>
-                    <BenefitName>BenefitName</BenefitName>
-                    <Premium>BenefitPremium</Premium>
-                  </Benefit>
-                </Benefits>
-              </Policy>
-            </Policies>
-          </Member>
-        </Members>
-     
-    </Client>
-  </Clients>-->
-
-  <!-- <Clients>
-  <Client country="clientCountry">
-    <Name>clientname</Name>
-    <Num>clientnum</Num>
-    <Members atts="atts">
-      <Member>
-        <Name>MemberName</Name>
-        <SurName surnameatt="snameatt">MemSurname</SurName>
-        <Policies>
-          <Policy>
-            <PolicyNum>PolicyNum</PolicyNum>
-            <PolicyName>PolicyName</PolicyName>
-            <Benefits>
-              <Benefit>
-                <BenefitName>BenefitName</BenefitName>
-                <Premium>BenefitPremium</Premium>
-              </Benefit>
-            </Benefits>
-          </Policy>
-        </Policies>
-      </Member>
-    </Members>
-  </Client>
-  </Clients>-->
-
-  <!--<Notice>
-    <NoticeId>NoticeId</NoticeId>
-    <Address>
-      <StreetName>StreetNm</StreetName>
-      <Pincode>Pincode</Pincode>
-      <State>State</State>
-    </Address>
-    <Member>
-      <Name>MemberName</Name>
-      <Age>MemberAge</Age>
-      <Policies>
-        <Policy>
-          <PolicyId>PolicyId</PolicyId>
-          <Name>PolicyName</Name>
-          <Benefits>
-            <Benefit>
-              <BenefitId>BenefitId</BenefitId>
-              <Name>BenefitName</Name>
-              <Premium>Premium</Premium>
-            </Benefit>
-          </Benefits>
-        </Policy>
-      </Policies>
-    </Member>
-  </Notice>-->
-<!--</Root>-->
-
+<items>
+  <item id="ItemId" type="ItemType">
+    <name>ItemName</name>
+    <ppu>ItemPpu</ppu>
+    <batters>
+      <batter id="BatterId">BatterName</batter>
+      <!--<batter id="1002">Chocolate</batter>-->
+    </batters>
+    <toppings>
+    <topping id="ToppingId">ToppingName</topping>
+    <!--<topping id="5002">Glazed</topping>-->
+    </toppings>
+  </item>
+</items>
