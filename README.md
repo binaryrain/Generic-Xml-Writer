@@ -12,44 +12,78 @@ To Do before using:
 - DbColumnsThatShouldCombineUnique node in <processname>.xml :  It is comma separated Db Column names based on which XML layering is done. If there are repeating nodes on same level then we need two layering separated by #.
   
   Example 1 : 
-  <items>
-	<item id="0001" type="donut"> -- REAPEATING NODE
-		<name>Cake</name>
-		<ppu>0.55</ppu>
-		<batters>
-			<batter id="1001">Regular</batter> -- REAPEATING NODE
-			<batter id="1002">Chocolate</batter>
-			<batter id="1003">Blueberry</batter>
-		</batters>
-		<topping id="5001">None</topping> -- REAPEATING NODE
-		<topping id="5002">Glazed</topping>
-		<topping id="5005">Sugar</topping>		
-	</item>
-	...
+<items>
+	
+<item id="0001" type="donut"> -- REAPEATING NODE
+		
+<name>Cake</name>
+		
+<ppu>0.55</ppu>
+		
+<batters>
+			
+<batter id="1001">Regular</batter> -- REAPEATING NODE
+			
+<batter id="1002">Chocolate</batter>
+			
+<batter id="1003">Blueberry</batter>
+		
+</batters>
+		
+<topping id="5001">None</topping> -- REAPEATING NODE
+		
+<topping id="5002">Glazed</topping>
+		
+<topping id="5005">Sugar</topping>		
+	
+</item>
+	
+...
+
 </items>
 DbColumnsThatShouldCombineUnique would be "ItemId,BatterId#ItemId,ToppingId" (# because BatterId and ToppingId are on same level)
 
 Example 2:
 <Root>
-	<artists>
-		<artist>  -- REPEATING NODE
-			<Id>1</Id>
-			<Name>assd</Name>
-			<Albums>
-			    <Album>   -- REPEATING NODE
-          			<id>AlbumId</id>
-          			<Name>AlbumName</Name>
-          			<Genre>Genre</Genre>
-				         <Songs>
-            				<Song>  -- REPEATING NODE
-              				  <Id>SongId</Id>
-              				  <Name>SongName</Name>
-            				</Song>
-       			   </Songs>
-			    </Album>
-			</Albums>
-		</artist>
-	</artists>
+	
+<artists>
+		
+<artist>  -- REPEATING NODE
+			
+<Id>1</Id>
+			
+<Name>assd</Name>
+			
+<Albums>
+			    
+<Album>   -- REPEATING NODE
+          			
+<id>AlbumId</id>
+          			
+<Name>AlbumName</Name>
+          			
+<Genre>Genre</Genre>
+				         
+<Songs>
+            				
+<Song>  -- REPEATING NODE
+              				  
+<Id>SongId</Id>
+              				  
+<Name>SongName</Name>
+            				
+</Song>
+       			   
+</Songs>
+			    
+</Album>
+			
+</Albums>
+		
+</artist>
+	
+</artists>
+
 </Root>
 
 DbColumnsThatShouldCombineUnique would be "ArtistId,AlbumId,SongId" (because each artist has unique album and each album has unique song)
